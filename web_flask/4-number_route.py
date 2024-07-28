@@ -29,13 +29,10 @@ def python(text='is cool'):
     """display Python followed by the value"""
     return 'Python ' + text.replace('_', ' ')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
-
 
 @app.route('/number/<int:n>', strict_slashes=False)
 def number(n):
-    """display n is a number"""
+    """display n is a number if n is an integer"""
     return "{:d} is a number".format(n)
 
 if __name__ == '__main__':
