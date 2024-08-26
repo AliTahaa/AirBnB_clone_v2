@@ -9,6 +9,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 
+
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
@@ -20,8 +21,8 @@ class FileStorage:
             if isinstance(clas, str):
                 clas = globals().get(clas)
             if clas and issubclass(clas, BaseModel):
-                cls_dict = {k: v 
-                            for k, v in self.__objects.items() if isinstance(v, clas)}
+                cls_dict = {k: v for k, v in self.__objects.items()
+                            if isinstance(v, clas)}
                 return cls_dict
         return FileStorage.__objects
 
