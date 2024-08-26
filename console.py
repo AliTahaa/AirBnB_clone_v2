@@ -11,6 +11,14 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 import shlex
+import models
+
+
+classes = {
+            'BaseModel': BaseModel, 'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+            }
 
 
 class HBNBCommand(cmd.Cmd):
@@ -19,11 +27,6 @@ class HBNBCommand(cmd.Cmd):
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
-    classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
-              }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
              'number_rooms': int, 'number_bathrooms': int,
@@ -92,7 +95,7 @@ class HBNBCommand(cmd.Cmd):
         if not sys.__stdin__.isatty():
             print('(hbnb) ', end='')
         return stop
-    
+
     def _key_value_parser(self, args):
         """creates a dictionary from a list of strings"""
         new_dict = {}
@@ -155,33 +158,23 @@ class HBNBCommand(cmd.Cmd):
         print("Creates a class of any type")
         print("[Usage]: create <className>\n")
 
-    def do_show(self, args):
-        """ Method to show an individual object """
-        new = args.partition(" ")
-        c_name = new[0]
-        c_id = new[2]
-
-        # guard against trailing args
-        if c_id and ' ' in c_id:
-            c_id = c_id.partition(' ')[0]
-
-        if not c_name:
+    def do_show(self, arg):
+        """Prints an instance as a string based on the class and id"""
+        args = shlex.split(arg)
+        if len(args) == 0:
             print("** class name missing **")
-            return
-
-        if c_name not in HBNBCommand.classes:
+            return False
+        if args[0] in classes:
+            if len(args) > 1:
+                key = args[0] + "." + args[1]
+                if key in models.storage.all():
+                    print(models.storage.all()[key])
+                else:
+                    print("** no instance found **")
+            else:
+                print("** instance id missing **")
+        else:
             print("** class doesn't exist **")
-            return
-
-        if not c_id:
-            print("** instance id missing **")
-            return
-
-        key = c_name + "." + c_id
-        try:
-            print(storage._FileStorage__objects[key])
-        except KeyError:
-            print("** no instance found **")
 
     def help_show(self):
         """ Help information for the show command """
@@ -221,23 +214,22 @@ class HBNBCommand(cmd.Cmd):
         print("Destroys an individual instance of a class")
         print("[Usage]: destroy <className> <objectId>\n")
 
-    def do_all(self, args):
-        """ Shows all objects, or all objects of a class"""
-        print_list = []
-
-        if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+    def do_all(self, arg):
+        """Prints string representations of instances"""
+        args = shlex.split(arg)
+        obj_list = []
+        if len(args) == 0:
+            obj_dict = models.storage.all()
+        elif args[0] in classes:
+            obj_dict = models.storage.all(classes[args[0]])
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
-
-        print(print_list)
+            print("** class doesn't exist **")
+            return False
+        for key in obj_dict:
+            obj_list.append(str(obj_dict[key]))
+        print("[", end="")
+        print(", ".join(obj_list), end="")
+        print("]")
 
     def help_all(self):
         """ Help information for the all command """
@@ -247,7 +239,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage._FileStorage__objects.items():
+        for k, v in storage.all().items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
