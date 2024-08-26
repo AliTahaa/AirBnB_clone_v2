@@ -4,7 +4,7 @@ from models.base_model import BaseModel, Base
 from os import getenv
 from sqlalchemy import Column, String, ForeignKey, Float, Integer, Table
 from sqlalchemy.orm import relationship
-
+from models.review import Review
 
 
 class Place(BaseModel, Base):
@@ -22,6 +22,8 @@ class Place(BaseModel, Base):
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
         amenity_ids = []
+        reviews = relationship("Review", backref="place",
+                               cascade="all, delete")
     else:
         city_id = ""
         user_id = ""
