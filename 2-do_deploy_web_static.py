@@ -3,12 +3,12 @@
     ..an archive to your web servers, using the function do_deploy: """
 
 
-from fabric import run, put, env
+from fabric.api import *
 from datetime import datetime
 from os.path import exists
 
 
-env.hosts = ['35.237.166.125', '54.167.61.201']  # <IP web-01>, <IP web-02>
+env.hosts = ['54.157.184.222', '54.160.87.220']  # <IP web-01>, <IP web-02>
 # ^ All remote commands must be executed on your both web servers
 # (using env.hosts = ['<IP web-01>', 'IP web-02'] variable in your script)
 
