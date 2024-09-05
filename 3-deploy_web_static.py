@@ -37,6 +37,8 @@ def do_deploy(archive_path):
         run("mkdir -p {}/".format(no_tgz))
         run("tar -xzf {} -C {}/".format(tmp, no_tgz))
         run("rm {}".format(tmp))
+        run("rm -rf {}/images".format(no_tgz))
+        run("rm -rf {}/styles".format(no_tgz))
         run("mv {}/web_static/* {}/".format(no_tgz, no_tgz))
         run("rm -rf {}/web_static".format(no_tgz))
         run("rm -rf /data/web_static/current")
