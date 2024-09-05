@@ -15,5 +15,5 @@ def do_pack():
         file_n = "versions/web_static_{}.tgz".format(d)
         local("tar -cvzf {} web_static".format(file_n))
         return file_n
-    except:
+    except Exception:
         return None
